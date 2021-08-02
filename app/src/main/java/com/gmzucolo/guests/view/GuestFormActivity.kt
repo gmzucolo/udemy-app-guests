@@ -7,12 +7,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gmzucolo.guests.R
+import com.gmzucolo.guests.service.constants.GuestConstants
 import com.gmzucolo.guests.viewmodel.GuestFormViewModel
 import kotlinx.android.synthetic.main.activity_guest_form.*
 
 class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mViewModel: GuestFormViewModel
+    private var mGuestId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +24,9 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
         setListeners()
         observe()
+        loadData()
+
+        radio_presence.isChecked = true
     }
 
     override fun onClick(view: View) {
@@ -31,8 +36,12 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
             val name = edit_name.text.toString()
             val presence = radio_presence.isChecked
 
-            mViewModel.save(name, presence)
+            mViewModel.save(mGuestId, name, presence)
         }
+    }
+
+    private fun setListeners() {
+        button_save.setOnClickListener(this)
     }
 
     private fun observe() {
@@ -44,9 +53,23 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
             }
             finish()
         })
+
+        mViewModel.guest.observe(this, Observer {
+            edit_name.setText(it.name)
+            if (it.presence) {
+                radio_presence.isChecked = true
+            } else {
+                radio_absent.isChecked = true
+            }
+        })
     }
 
-    private fun setListeners() {
-        button_save.setOnClickListener(this)
+    private fun loadData() {
+        val bundle = intent.extras
+        if (bundle != null) {
+            mGuestId = bundle.getInt(GuestConstants.GUESTID)
+            //load
+            mViewModel.load(mGuestId)
+        }
     }
 }

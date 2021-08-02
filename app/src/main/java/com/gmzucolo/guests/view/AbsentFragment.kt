@@ -1,45 +1,83 @@
 package com.gmzucolo.guests.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.gmzucolo.guests.databinding.FragmentSlideshowBinding
-import com.gmzucolo.guests.viewmodel.AbsentViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.gmzucolo.guests.R
+import com.gmzucolo.guests.service.constants.GuestConstants
+import com.gmzucolo.guests.view.adapter.GuestAdapter
+import com.gmzucolo.guests.view.listener.GuestListener
+import com.gmzucolo.guests.viewmodel.GuestsViewModel
 
 class AbsentFragment : Fragment() {
 
-    private lateinit var absentViewModel: AbsentViewModel
-    private var _binding: FragmentSlideshowBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+    private lateinit var mViewModel: GuestsViewModel
+    private val mAdapter: GuestAdapter = GuestAdapter()
+    private lateinit var mListener: GuestListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        absentViewModel =
-            ViewModelProvider(this).get(AbsentViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(GuestsViewModel::class.java)
 
-        _binding = FragmentSlideshowBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val root = inflater.inflate(R.layout.fragment_absent, container, false)
 
-        val textView: TextView = binding.textSlideshow
-        absentViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        //RecyclerView
+        //1. Obtain a recycler
+        val recycler = root.findViewById<RecyclerView>(R.id.recycler_absents)
+
+        //2. Define a layout
+        recycler.layoutManager = LinearLayoutManager(context)
+
+        //3. Define an adapter (paste data and layout)
+        recycler.adapter = mAdapter
+
+        observe()
+
+        mListener = object : GuestListener {
+            override fun onClick(id: Int) {
+
+                val intent = Intent(context, GuestFormActivity::class.java)
+
+                val bundle: Bundle = Bundle()
+                bundle.putInt(GuestConstants.GUESTID, id)
+
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
+
+            override fun onDelete(id: Int) {
+                mViewModel.delete(id)
+                mViewModel.load(GuestConstants.FILTER.ABSENT)
+            }
+
+        }
+
+        mAdapter.attachListener(mListener)
+
         return root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onResume() {
+        super.onResume()
+        mViewModel.load(GuestConstants.FILTER.ABSENT)
     }
+
+    private fun observe() {
+        mViewModel.guestlist.observe(viewLifecycleOwner, Observer {
+            mAdapter.updateGuests(it)
+        })
+
+    }
+
+
 }
