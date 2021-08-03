@@ -15,6 +15,7 @@ import com.gmzucolo.guests.service.constants.GuestConstants
 import com.gmzucolo.guests.view.adapter.GuestAdapter
 import com.gmzucolo.guests.view.listener.GuestListener
 import com.gmzucolo.guests.viewmodel.GuestsViewModel
+import kotlinx.coroutines.InternalCoroutinesApi
 
 class AbsentFragment : Fragment() {
 
@@ -22,6 +23,7 @@ class AbsentFragment : Fragment() {
     private val mAdapter: GuestAdapter = GuestAdapter()
     private lateinit var mListener: GuestListener
 
+    @InternalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,6 +69,7 @@ class AbsentFragment : Fragment() {
         return root
     }
 
+    @InternalCoroutinesApi
     override fun onResume() {
         super.onResume()
         mViewModel.load(GuestConstants.FILTER.ABSENT)

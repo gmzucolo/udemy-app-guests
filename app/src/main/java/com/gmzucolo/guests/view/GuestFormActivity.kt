@@ -10,12 +10,14 @@ import com.gmzucolo.guests.R
 import com.gmzucolo.guests.service.constants.GuestConstants
 import com.gmzucolo.guests.viewmodel.GuestFormViewModel
 import kotlinx.android.synthetic.main.activity_guest_form.*
+import kotlinx.coroutines.InternalCoroutinesApi
 
 class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mViewModel: GuestFormViewModel
     private var mGuestId: Int = 0
 
+    @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_guest_form)
@@ -29,6 +31,7 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
         radio_presence.isChecked = true
     }
 
+    @InternalCoroutinesApi
     override fun onClick(view: View) {
         val id = view.id
         if (id == R.id.button_save) {
@@ -64,6 +67,7 @@ class GuestFormActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
 
+    @InternalCoroutinesApi
     private fun loadData() {
         val bundle = intent.extras
         if (bundle != null) {

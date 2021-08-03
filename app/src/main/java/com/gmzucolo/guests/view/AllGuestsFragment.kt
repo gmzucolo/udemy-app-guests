@@ -16,6 +16,7 @@ import com.gmzucolo.guests.service.constants.GuestConstants
 import com.gmzucolo.guests.view.adapter.GuestAdapter
 import com.gmzucolo.guests.view.listener.GuestListener
 import com.gmzucolo.guests.viewmodel.GuestsViewModel
+import kotlinx.coroutines.InternalCoroutinesApi
 
 class AllGuestsFragment : Fragment() {
 
@@ -29,6 +30,7 @@ class AllGuestsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    @InternalCoroutinesApi
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View? {
         mVIewModel =
             ViewModelProvider(this).get(GuestsViewModel::class.java)
@@ -71,6 +73,7 @@ class AllGuestsFragment : Fragment() {
         return root
     }
 
+    @InternalCoroutinesApi
     override fun onResume() {
         super.onResume()
         mVIewModel.load(GuestConstants.FILTER.EMPTY)
